@@ -1,14 +1,16 @@
+require('dotenv').config();
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const session = require('express-session');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const methodOverride = require('method-override');
-require('dotenv').config();
+
 
 const app = express();
 
@@ -16,20 +18,50 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Create Session
+app.use(session({
+	secret: 'Exmn3S42wg58bEXF7Jupke',
+	resave: true,
+	saveUninitialized: true
+}));
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 //for PUT and DELETE requests
 app.use(methodOverride("_method"));
+
+const db = require('./modules/database');
+
+// Authentication Connection to database;
+db.sequelize.authenticate()
+    .then(()=>{
+        console.log("Connected to database successfully");
+    })
+    .catch(err => {
+        console.error("An error occured while connecting ", err);
+});
+
+// Initializing models
+const User = require('./models/User');
+
+// Sync DB
+// db.sequelize.sync({force: true}).then(() => {
+//   require('./modules/seed')();
+//   console.log("Database synchronized");
+// }).catch(err => {
+//   console.log("Error while synchronizing data: ", err);
+// });
+
 global.dbErrorMsg = "Database not responding try again later";
 global.cookieOpt = {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
 };
-
 
 app.use((req, res, next) => {
   res.locals.user = req.cookies.user;
