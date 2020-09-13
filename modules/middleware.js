@@ -3,7 +3,7 @@ module.exports = {
         notLoggedIn: (redirect = '/') => {
             return (req, res, next) => {
                 if (req.session.loggedin) {
-        
+                    res.redirect(redirect);
                 }else{
                     next();
                 }
@@ -12,7 +12,7 @@ module.exports = {
         loggedIn: (redirect = '/auth/login') => {
             return (req, res, next) => {
                 if (!req.session.loggedin) {
-                    
+                    res.redirect(redirect);
                 }else{
                     next();
                 }

@@ -9,6 +9,7 @@ const session = require('express-session');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
+const flash = require('connect-flash');
 const methodOverride = require('method-override');
 
 
@@ -18,6 +19,13 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+
+if (app.get('env') === 'production') {
+  app.set('trust proxy', 1) // trust first proxy
+  sess.cookie.secure = true // serve secure cookies
+}
+ 
+
 // Create Session
 app.use(session({
 	secret: 'Exmn3S42wg58bEXF7Jupke',
@@ -25,12 +33,14 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(flash());
 
 //for PUT and DELETE requests
 app.use(methodOverride("_method"));
