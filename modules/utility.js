@@ -70,12 +70,13 @@ module.exports = {
             return new Promise((resolve, reject) => {
                 User.findOne({where: {username}}).then((user) => {
                     models.Story.findByPk(id).then(story => {
-                        console.log('HAS STORY: ', user.hasStory(story));
                         if (user.hasStory(story).then(res => {
                             if (!res) {
                                 user.addStory(story).then(() => {
                                     resolve(true);
                                 });
+                            }else{
+                                resolve(true);
                             }
                         }));
                     }).catch(error => {

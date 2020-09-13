@@ -20,6 +20,36 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+var io = require('socket.io')(server);
+
+var allConnection = {
+
+};
+
+io.on('connection', (socket) => {
+  
+  // Check if key exists
+  var u = new URL(socket.request.headers.referer);
+  var pathName = u.pathname;
+  var id = pathName.split('/');
+  id = id.pop();
+  if (!allConnection.hasOwnProperty(id)) {
+    allConnection[id] = 1;
+    io.emit('count_connection', allConnection);
+  }else {
+    allConnection[id]++;
+    io.emit('count_connection', allConnection);
+  }
+  
+  socket.on('disconnect', () => {
+    
+    allConnection[id]--;
+    io.emit('count_connection', allConnection);
+  });
+});
+
+
+
 
 /**
  * Listen on provided port, on all network interfaces.

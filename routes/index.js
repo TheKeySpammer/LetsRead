@@ -44,7 +44,7 @@ var stories_data = [];
         stories_data.push(temp);
       });
 
-      res.render('dashboard', {stories_data});
+      res.render('dashboard', {stories_data, username: req.session.username});
     }).catch(err => {
       console.log(err);
     });
@@ -56,12 +56,15 @@ var stories_data = [];
 
 router.get('/story/:id', middleware.auth.loggedIn(), function(req, res, next) {
   let id = parseInt(req.params.id);
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
   utility.story.getStory(id).then(story => {
     utility.story.setStoryRead(id, req.session.username).then(() => {
       utility.story.getStoryViews(id).then(views => {
-        // console.log(story);
-        // console.log(views);
-        res.render('story', {story, views});
+        var pub_date = story.date_published.getDate()+' '+monthNames[story.date_published.getMonth()]+', '+story.date_published.getFullYear()
+        story.date_published = pub_date;
+        res.render('story', {story, views, username: req.session.username});
       });
     });
   }).catch(err => {

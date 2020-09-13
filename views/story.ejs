@@ -23,6 +23,9 @@
 
         <div class="navbar-end">
             <div class="navbar-item">
+                Hello <%=username%>
+            </div>
+            <div class="navbar-item">
                 <div class="buttons">
                     <a href="/auth/logout" class="button is-primary">
                         <strong>Log Out</strong>
@@ -43,13 +46,27 @@
                 <h1 class="title is-5"><%= story.date_published %></h1>
             </div>
             <div class="column is-2">
-                Views: <strong><%= views %></strong>
+                <p>
+                    Views: <strong><%= views %></strong>
+                </p>
+                <p>
+                    Currently Reading: <span id="current_count">1</span>
+                </p>
             </div>
         </div>
         <p><%=story.content%></p>
     </div>
 </section>
 
-
+<script src="/javascripts/socket.io.js"></script>
+<script>
+    var storyID = '<%= story.id %>';
+    var socket = io();
+    
+    socket.on('count_connection', function(msg) {
+        console.log(msg);
+        $("#current_count").html(msg[storyID]);
+    });
+</script>
 
 <%include ./partials/footer %>
