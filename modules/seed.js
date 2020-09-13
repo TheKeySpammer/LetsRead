@@ -448,6 +448,13 @@ module.exports = function () {
             email: 'gt_ams@yahoo.in',
             password: 'password',
         },
+        {
+            username: 'kentledgegloaming',
+            first_name: 'Kenroku',
+            last_name: 'Malabarba',
+            email: 'owa7sny.qal@mailperfetch.com',
+            password: 'kentledgegloaming',
+        },
 
     ]
 
