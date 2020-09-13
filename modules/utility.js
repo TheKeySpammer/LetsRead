@@ -32,13 +32,13 @@ module.exports = {
         getAllStory: (sort_by) => {
             return new Promise((resolve, reject) => {
                 if (sort_by == 'date') {
-                    db.sequelize.query("SELECT `stories`.* , COUNT(`UserId`) as `views` FROM `stories` LEFT JOIN `storyviews` ON `storyviews`.`StoryId` = `stories`.`id` GROUP BY `stories`.`id` ORDER BY `date_published` DESC").then(res => {
+                    db.sequelize.query("SELECT `Stories`.* , COUNT(`UserId`) as `views` FROM `Stories` LEFT JOIN `StoryViews` ON `StoryViews`.`StoryId` = `Stories`.`id` GROUP BY `Stories`.`id` ORDER BY `date_published` DESC").then(res => {
                     resolve(res);
                     }).catch(err => {
                         reject(err);
                     });
                 }else if (sort_by == 'views') {
-                    db.sequelize.query("SELECT `stories`.* , COUNT(`UserId`) as `views` FROM `stories` LEFT JOIN `storyviews` ON `storyviews`.`StoryId` = `stories`.`id` GROUP BY `stories`.`id` ORDER BY `views` DESC").then(res => {
+                    db.sequelize.query("SELECT `Stories`.* , COUNT(`UserId`) as `views` FROM `Stories` LEFT JOIN `StoryViews` ON `StoryViews`.`StoryId` = `Stories`.`id` GROUP BY `Stories`.`id` ORDER BY `views` DESC").then(res => {
                     resolve(res);
                     }).catch(err => {
                         reject(err);
@@ -49,7 +49,7 @@ module.exports = {
         getUserStories: (username) => {
             return new Promise((resolve, reject) => {
                 User.findOne({where: {username}}).then((user) => {
-                    db.sequelize.query("SELECT `StoryId` FROM `storyviews` WHERE `UserId` = "+user.id).then(stories => {
+                    db.sequelize.query("SELECT `StoryId` FROM `StoryViews` WHERE `UserId` = "+user.id).then(stories => {
                         resolve(stories);
                     }).catch(err => {
                         reject(err);
