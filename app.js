@@ -57,7 +57,7 @@ db.sequelize.authenticate()
 });
 
 // Initializing models
-const User = require('./models/User');
+const models = require('./models/Models');
 
 // Sync DB
 // db.sequelize.sync({force: true}).then(() => {

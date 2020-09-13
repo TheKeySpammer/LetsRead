@@ -1,15 +1,17 @@
 const db = require('./database');
-const User = require('../models/User');
+const models = require('../models/Models');
+const { sequelize } = require('./database');
+const { User } = require('../models/Models');
 
 
 module.exports = {
     user: {
         createUser: (data) => {
-            return User.create({...data});
+            return models.User.create({...data});
         },
-        userExists: (email, password) => {
+        userExists: (username, password) => {
             return new Promise((resolve, reject) => {
-                User.findOne({where: {email: email}}).then(function(user) {
+                models.User.findOne({where: {username: username}}).then(function(user) {
                     if (user == null) {
                         resolve(null);
                     }
@@ -25,5 +27,78 @@ module.exports = {
             });
         }
     },
+
+    story: {
+        getAllStory: (sort_by) => {
+            return new Promise((resolve, reject) => {
+                if (sort_by == 'date') {
+                    db.sequelize.query("SELECT `stories`.* , COUNT(`UserId`) as `views` FROM `stories` LEFT JOIN `storyviews` ON `storyviews`.`StoryId` = `stories`.`id` GROUP BY `stories`.`id` ORDER BY `date_published` DESC").then(res => {
+                    resolve(res);
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }else if (sort_by == 'views') {
+                    db.sequelize.query("SELECT `stories`.* , COUNT(`UserId`) as `views` FROM `stories` LEFT JOIN `storyviews` ON `storyviews`.`StoryId` = `stories`.`id` GROUP BY `stories`.`id` ORDER BY `views` DESC").then(res => {
+                    resolve(res);
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }
+            });
+        },
+        getUserStories: (username) => {
+            return new Promise((resolve, reject) => {
+                User.findOne({where: {username}}).then((user) => {
+                    db.sequelize.query("SELECT `StoryId` FROM `storyviews` WHERE `UserId` = "+user.id).then(stories => {
+                        resolve(stories);
+                    }).catch(err => {
+                        reject(err);
+                    });
+                });
+            });
+        },
+        getStory: (id) => {
+            return new Promise((resolve, reject) => {
+                models.Story.findByPk(id).then(story => {
+                    resolve(story);
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        },
+        setStoryRead: (id, username) => {
+            return new Promise((resolve, reject) => {
+                User.findOne({where: {username}}).then((user) => {
+                    models.Story.findByPk(id).then(story => {
+                        console.log('HAS STORY: ', user.hasStory(story));
+                        if (user.hasStory(story).then(res => {
+                            if (!res) {
+                                user.addStory(story).then(() => {
+                                    resolve(true);
+                                });
+                            }
+                        }));
+                    }).catch(error => {
+                        reject(error);
+                    });
+                }).catch(err => {
+                    reject(err);
+                });
+            });
+        },
+        getStoryViews: (id) => {
+            return new Promise((resolve, reject) => {
+                models.Story.findByPk(id).then(story => {
+                    story.getUsers().then(users => {
+                        resolve(users.length);
+                    }).catch(err => {
+                        reject(err);
+                    });
+                }).catch(error => {
+                    reject(error);
+                });
+            });
+        }
+    }
     
 }

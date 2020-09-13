@@ -1,4 +1,116 @@
 <%include ./partials/header %>
-<h1 class="title">Dashbaord</h1>
-<a href="/auth/logout">Logout</a>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="#">
+            <h1 class="title is-2 auth-title">Let's Read</h1>
+        </a>
+
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+            data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a href="/" class="navbar-item">
+                Home
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a href="/auth/logout" class="button is-primary">
+                        <strong>Log Out</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <h1 class="title is-1">Stories</h1>
+            </div>
+            <div class="column is-2">
+                <div class="dropdown is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button is-info" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span>Sort By</span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a id="sort-by-upload-date" class="dropdown-item">
+                                Upload Date
+                            </a>
+                            <hr class="dropdown-divider">
+                            <a id="sort-by-view-count" class="dropdown-item">
+                                View Count
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% for(var i = 0; i < stories_data.length; i++) { %>
+        <div class="card story-card <%= stories_data[i].read ? 'read-card': 'unread-card' %>" onclick="window.location.href = 'story/<%= stories_data[i].id %>'">
+            <div class="card-content">
+                <div class="content">
+                    <h2 class="title is-2"><%= stories_data[i].title %></h2>
+                    <p>
+                        <%= stories_data[i].content %>
+                    </p>
+
+                    <div class="columns story-footer">
+                        <div class="column">
+                            <%= stories_data[i].date_published %>
+                        </div>
+                        <div class="column has-text-right">
+                            Views: <strong><%= stories_data[i].views %></strong> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</section>
+
+
+<script>
+    $("#sort-by-view-count").click(function() {
+        var url = new URL(window.location.href);
+        if (url.searchParams.has('sort_by')) {
+            url.searchParams.delete('sort_by');
+        }
+        url.searchParams.append('sort_by', 'views');
+
+        window.location.href = url.href;
+    });
+
+    $("#sort-by-upload-date").click(function() {
+        var url = new URL(window.location.href);
+        if (url.searchParams.has('sort_by')) {
+            url.searchParams.delete('sort_by');
+        }
+        url.searchParams.append('sort_by', 'date');
+
+        window.location.href = url.href;
+
+    });
+</script>
+
 <%include ./partials/footer %>

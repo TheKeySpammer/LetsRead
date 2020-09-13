@@ -21,16 +21,17 @@ router.get('/login', middleware.auth.notLoggedIn(), (req, res) => {
 });
 
 router.post('/login', middleware.auth.notLoggedIn(), (req, res) => {
-    var email = req.body.email.trim();
+
+    var username = req.body.username.trim();
     var password = req.body.password.trim();
-    utility.user.userExists(email, password).then(exists => {
+    utility.user.userExists(username, password).then(exists => {
         if (exists == null || !exists) {
             req.flash('loggin_error', true);
-            req.flash('loggin_data', {email, password})
+            req.flash('loggin_data', {username, password})
             res.redirect('/auth/login');
         }else{
             req.session.loggedin = true;
-            req.session.email = email;
+            req.session.username = username;
             res.redirect('/');
         }
     }).catch(err => {
@@ -93,10 +94,10 @@ router.post('/signup', middleware.auth.notLoggedIn(), (req, res) => {
         error_load.email_error_msg = 'Please enter email';
         
     }
-    if (password.length == 0) {
+    if (password.length < 6) {
         error = true;
         error_load.password_error = true;
-        error_load.password_error_msg = 'Please enter password';
+        error_load.password_error_msg = 'Password should be atleast 6 characters long';
         
     }
     if (re_password.length == 0) {
@@ -120,7 +121,7 @@ router.post('/signup', middleware.auth.notLoggedIn(), (req, res) => {
     if (!error) {
         utility.user.createUser(data).then(user => {
             req.session.loggedin = true;
-            req.session.email = email;
+            req.session.username = username;
             res.redirect('/');
         }).catch(err => {
             if (err.errors[0].validatorKey == 'not_unique') {

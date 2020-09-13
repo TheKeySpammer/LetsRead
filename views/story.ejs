@@ -1,0 +1,55 @@
+<%include ./partials/header %>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="#">
+            <h1 class="title is-2 auth-title">Let's Read</h1>
+        </a>
+
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+            data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a href="/" class="navbar-item">
+                Home
+            </a>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a href="/auth/logout" class="button is-primary">
+                        <strong>Log Out</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <a href="/">Back</a>
+                <h1 class="title is-1"><%= story.title %></h1>
+                <h1 class="title is-5"><%= story.date_published %></h1>
+            </div>
+            <div class="column is-2">
+                Views: <strong><%= views %></strong>
+            </div>
+        </div>
+        <p><%=story.content%></p>
+    </div>
+</section>
+
+
+
+<%include ./partials/footer %>

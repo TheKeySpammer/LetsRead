@@ -1,7 +1,33 @@
 const db = require("../modules/database");
 const crypto = require('crypto');
 
-const User = db.sequelize.define("Person", {
+const Story = db.sequelize.define("Story", {
+    id: {
+        type: db.Sequelize.INTEGER.UNSIGNED,
+        primaryKey: true,
+        autoIncrement: true
+    },
+
+    title: {
+        type: db.Sequelize.STRING,
+        allowNull: false,
+    },
+
+    content: {
+        type: db.Sequelize.TEXT,
+        allowNull: true
+    },
+
+    date_published: {
+        type: db.Sequelize.DATE,
+        allowNull: false,
+    }
+});
+
+
+
+
+const User = db.sequelize.define("User", {
     id: {
         type: db.Sequelize.INTEGER.UNSIGNED,
         primaryKey: true,
@@ -85,4 +111,17 @@ User.prototype.correctPassword = function(enteredPassword) {
     return User.encryptPassword(enteredPassword, this.salt()) === this.password()
 };
 
-module.exports = User;
+const StoryView = db.sequelize.define("StoryViews", {
+    id: {
+        type: db.Sequelize.INTEGER.UNSIGNED,
+        primaryKey: true,
+        autoIncrement: true
+    }
+});
+
+
+User.belongsToMany(Story, {through: StoryView});
+Story.belongsToMany(User, {through: StoryView});
+
+
+module.exports = {Story, User, StoryView};
